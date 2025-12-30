@@ -45,3 +45,5 @@ EXPOSE 80
 
 # 啟動 Nginx 與 PHP-FPM
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+
+# Test
