@@ -2,7 +2,7 @@ name: Build and Push to ECR (OIDC)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "usa-wp-main" ]
 
 # 這部分是 OIDC 必備的權限設定
 permissions:
@@ -30,7 +30,17 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: usa-wp-ecr
+        IMAGE_TAG: official
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        # 根據分支名稱動態設定 ECR 倉庫名稱
+        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          ECR_REPOSITORY="usa-wordpress"
+          IMAGE_TAG="official"
+        elif [ "${{ github.ref }}" = "refs/heads/usa-wp-main" ]; then
+          ECR_REPOSITORY="usa-wp-dev"
+          IMAGE_TAG="latest"
+        fi
+        
+        echo "Pushing to $ECR_REPOSITORY..."
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
