@@ -37,7 +37,7 @@ jobs:
           ECR_REPOSITORY="usa-wordpress"
           IMAGE_TAG="official"
         elif [ "${{ github.ref }}" = "refs/heads/usa-wp-main" ]; then
-          ECR_REPOSITORY="usa-wp-dev"
+          ECR_REPOSITORY="usa-wp-ecr"
           IMAGE_TAG="latest"
         fi
         
