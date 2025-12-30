@@ -5,6 +5,7 @@ FROM php:8.3-fpm-alpine
 RUN apk add --no-cache \
     nginx \
     libpng-dev \
+    supervisor \
     libjpeg-turbo-dev \
     libwebp-dev \
     freetype-dev \
@@ -16,14 +17,7 @@ RUN apk add --no-cache \
 
 # 配置 PHP 擴展
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) \
-    gd \
-    mysqli \
-    pdo_mysql \
-    intl \
-    bcmath \
-    zip \
-    opcache
+    && docker-php-ext-install -j$(nproc) gd mysqli pdo_mysql intl bcmath zip opcache
 
 # 設定工作目錄
 WORKDIR /var/www/html
@@ -38,13 +32,11 @@ RUN tar -xzf /tmp/wordpress.tar.gz -C /tmp && \
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
 # 設定權限 (WordPress 需要對 wp-content 有寫入權)
-RUN chown -R www-data:www-data /var/www/html
+RUN mkdir -p /run/nginx && \
+    chown -R www-data:www-data /var/www/html /var/lib/nginx /var/log/nginx /run/nginx
 
 # 暴露 80 埠
 EXPOSE 80
 
 # 啟動 Nginx 與 PHP-FPM
-#CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
-
-# 修改最後一行為
 CMD ["sh", "-c", "chown -R www-data:www-data /var/www/html && php-fpm -D && nginx -g 'daemon off;'"]
