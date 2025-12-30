@@ -29,24 +29,21 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
 # 設定工作目錄
 WORKDIR /var/www/html
 
-# 下載並解壓 WordPress 原始碼
+# 下載並解壓 WordPress
 ADD https://wordpress.org/latest.tar.gz /tmp/wordpress.tar.gz
 RUN tar -xzf /tmp/wordpress.tar.gz -C /tmp && \
-    cp -r /tmp/wordpress/* /var/www/html/ && \
+    # 使用 . 確保包含隱藏檔，並確保目標目錄乾淨
+    cp -rn /tmp/wordpress/. /var/www/html/ && \
     rm -rf /tmp/wordpress /tmp/wordpress.tar.gz
 
 # 複製 Nginx 設定
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
-# 設定權限 (WordPress 需要對 wp-content 有寫入權)
+# 核心修正：確保 nginx 執行時有權限讀取 pid 與 run 檔案 (Alpine 特色)
+RUN mkdir -p /run/nginx
+
+# 設定權限
 RUN chown -R www-data:www-data /var/www/html
 
-# 暴露 80 埠
-EXPOSE 80
-
-# 啟動 Nginx 與 PHP-FPM
-#CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
-
-# 修改最後一行為
+# 啟動命令：增加啟動前的權限強制檢查
 CMD ["sh", "-c", "chown -R www-data:www-data /var/www/html && php-fpm -D && nginx -g 'daemon off;'"]
-#
