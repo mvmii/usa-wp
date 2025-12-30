@@ -44,6 +44,7 @@ RUN chown -R www-data:www-data /var/www/html
 EXPOSE 80
 
 # 啟動 Nginx 與 PHP-FPM
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+#CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
 
-# Test
+# 修改最後一行為
+CMD ["sh", "-c", "chown -R www-data:www-data /var/www/html && php-fpm -D && nginx -g 'daemon off;'"]
