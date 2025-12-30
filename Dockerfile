@@ -32,7 +32,8 @@ RUN tar -xzf /tmp/wordpress.tar.gz -C /tmp && \
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
 # 設定權限 (WordPress 需要對 wp-content 有寫入權)
-RUN mkdir -p /run/nginx && \
+RUN sed -i 's/user nginx;/user www-data;/g' /etc/nginx/nginx.conf
+RUN mkdir -p /run/nginx /var/lib/nginx/tmp/client_body && \
     chown -R www-data:www-data /var/www/html /var/lib/nginx /var/log/nginx /run/nginx
 
 # 暴露 80 埠
