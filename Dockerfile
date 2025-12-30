@@ -25,7 +25,7 @@ WORKDIR /var/www/html
 # 下載並解壓 WordPress 原始碼
 ADD https://wordpress.org/latest.tar.gz /tmp/wordpress.tar.gz
 RUN tar -xzf /tmp/wordpress.tar.gz -C /tmp && \
-    cp -r /tmp/wordpress/* /var/www/html/ && \
+    cp -r /tmp/wordpress/. /var/www/html/ && \
     rm -rf /tmp/wordpress /tmp/wordpress.tar.gz
 
 # 複製 Nginx 設定
