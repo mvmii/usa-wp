@@ -4,10 +4,11 @@ FROM php:8.3-fpm-alpine
 # 安裝 Nginx 與 WordPress 必要的 PHP 擴展
 RUN apk add --no-cache \
     nginx \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    libwebp-dev \
+    supervisor \
     freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
     zip \
     libzip-dev \
     icu-dev \
@@ -48,3 +49,4 @@ EXPOSE 80
 
 # 修改最後一行為
 CMD ["sh", "-c", "chown -R www-data:www-data /var/www/html && php-fpm -D && nginx -g 'daemon off;'"]
+#
